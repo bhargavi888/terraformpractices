@@ -1,0 +1,21 @@
+provider "aws"  {
+  region     = "us-west-2"
+  access_key = "AKIA2VWDFXP4IQP3MLFA"
+  secret_key = "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"
+}
+
+resource "aws_s3_bucket" "s3bb" {
+  bucket = "my-tests3bb"
+  acl    = "private"
+
+   tags = {
+    Name        = "My-tests3bb"
+  }
+}
+
+resource "aws_s3_bucket_object" "s3object" {
+  bucket = "my-tests3bb"
+  key    = "H"
+  source = "D:/terraformscript/s3fileup/s.txt"
+  etag = filemd5("D:/terraformscript/s3fileup/s.txt")
+}
