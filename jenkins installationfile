@@ -1,0 +1,61 @@
+provider "aws" {
+  region     = "us-west-2"
+  access_key = "AKIA2VWDFXP4IQP3MLFA"
+  secret_key = "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"
+}
+resource "aws_instance" "aij" {
+  ami                    = "ami-036d46416a34a611c"
+  instance_type          = "t2.micro"
+  key_name               = "H"
+  vpc_security_group_ids = ["${aws_security_group.weba.id}"]
+  tags = {
+    Name = "JenkinsInstallation"
+  }
+
+}
+resource "null_resource" "copy_execute" {
+  connection {
+    type        = "ssh"
+    host        = aws_instance.aij.public_ip
+    user        = "ubuntu"
+     private_key = file("H.pem")
+  }
+
+  provisioner "file" {
+    source      = "jenkins.sh"
+    destination = "/tmp/jenkins.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chmod 777 /tmp/jenkins.sh",
+      "sh /tmp/jenkins.sh",
+    ]
+  }
+
+}
+
+resource "aws_security_group" "weba" {
+  name = "weba"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+
+  }
+}
