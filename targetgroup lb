@@ -1,0 +1,63 @@
+provider "aws"  {
+  region     = "us-west-2"
+  access_key = "AKIA2VWDFXP4IQP3MLFA"
+  secret_key = "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"
+}
+resource "aws_lb_target_group" "altg" {
+  name     = "altg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.vpc.id
+}
+
+resource "aws_vpc" "vpc" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_elb" "lb" {
+  availability_zones = ["us-west-2c"]
+  listener {
+    instance_port     = 8080
+    instance_protocol = "http"
+    lb_port           = 80
+    lb_protocol       = "http"
+  }
+   health_check {
+    healthy_threshold   = 6
+    unhealthy_threshold = 4
+    timeout             = 3
+    target              = "HTTP:8080/"
+    interval            = 20
+  }
+}
+resource "aws_instance" "ai" {
+  ami                    = "ami-036d46416a34a611c"
+  instance_type          = "t2.micro"
+  key_name               = "H"
+ vpc_security_group_ids = ["${aws_security_group.asg.id}"]
+  tags = {
+    Name = "alb"
+  }
+}
+
+resource "aws_security_group" "asg" {
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+ }
+ resource "aws_lb" "alb" {
+  load_balancer_type = "application"
+  security_groups    = ["${aws_security_group.asg.id}"]
+  subnets            = ["subnet-eac2aab7", "subnet-3fa73e47"]
+
+  enable_deletion_protection = true
+  }
