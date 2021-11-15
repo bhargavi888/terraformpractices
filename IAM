@@ -1,0 +1,31 @@
+provider "aws"  {
+  region     = "us-west-2"
+  access_key = "AKIA2VWDFXP4IQP3MLFA"
+  secret_key = "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"
+}
+resource "aws_iam_user" "iam" {
+  name = "iam"
+}
+
+resource "aws_iam_role" "airole" {
+  name = "airole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  tags = {
+    tag-key = "role"
+  }
+}
+
