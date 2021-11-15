@@ -1,0 +1,37 @@
+provider "aws"  {
+  region     = "us-west-2"
+  access_key = "AKIA2VWDFXP4IQP3MLFA"
+  secret_key = "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"
+}
+resource "aws_vpc" "vpc" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+
+  tags = {
+    Name = "demo-vpc"
+  }
+}
+
+resource "aws_instance" "ec2" {
+  ami                    = "ami-09889d8d54f9e0a0e"
+  instance_type          = "t2.micro"
+  key_name               = "H"
+  vpc_security_group_ids = ["${aws_security_group.asg.id}"]
+  tags = {
+    Name = "ec21"
+  }
+}
+resource "aws_security_group" "asg" {
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+ }
