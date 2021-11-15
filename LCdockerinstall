@@ -1,0 +1,46 @@
+provider "aws" {
+  region     = "us-west-2"
+  access_key = "AKIA2VWDFXP4IQP3MLFA"
+  secret_key = "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"
+}
+resource "aws_launch_configuration" "alc" {
+  image_id        = "ami-036d46416a34a611c"
+  name            = "alc"
+  instance_type   = "t2.micro"
+  key_name        = "H"
+  security_groups = ["${aws_security_group.asg.id}"]
+  user_data       = <<-EOF
+  #! /bin/bash
+  sudo apt-get update
+  sudo apt install docker.io -y
+  EOF
+}
+resource "aws_security_group" "asg" {
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+
+  }
+}
+resource "aws_autoscaling_group" "aag" {
+  launch_configuration = aws_launch_configuration.alc.id
+  availability_zones   = ["us-west-2c"]
+  desired_capacity     = 1
+  max_size             = 2
+  min_size             = 1
+}
+
