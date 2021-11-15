@@ -1,0 +1,19 @@
+provider "aws" {
+  region     = "us-west-2"
+  access_key = "AKIA2VWDFXP4IQP3MLFA"
+  secret_key = "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"
+}
+resource "aws_db_instance" "rds" {
+  allocated_storage    = 10
+  engine               = "mysql"
+  engine_version       = "5.7"
+  instance_class       = "db.t3.micro"
+  name                 = "myrds"
+  username             = "rds"
+  password             = "bhargavi123"
+}
+
+resource "aws_db_snapshot" "rdssnapshot" {
+  db_instance_identifier = aws_db_instance.rds.id
+  db_snapshot_identifier = "rdssnapshot"
+}
