@@ -1,0 +1,14 @@
+provider "aws"  {
+  region     = "us-west-2"
+  access_key = "AKIA2VWDFXP4IQP3MLFA"
+  secret_key = "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"
+}
+
+resource "aws_s3_bucket" "s3bb1" {
+  bucket = "my-tests3bb1"
+  acl    = "private"
+
+   tags = {
+    Name        = "My-tests3bb1"
+  }
+}
