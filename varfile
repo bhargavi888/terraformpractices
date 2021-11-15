@@ -1,0 +1,31 @@
+provider "aws"  {
+  region     = var.region
+  access_key = var.access-key
+  secret_key = var.secret-key
+}
+
+resource "aws_instance" "aws1" {
+  ami                    = var.ami
+  instance_type          = var.inst
+  subnet_id = var.subnets
+  security_groups    = ["${aws_security_group.asg.id}"]
+ key_name               = "H"
+
+  tags = {
+    Name = "aws1"
+  }
+}
+resource "aws_security_group" "asg" {
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+ }
