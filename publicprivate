@@ -1,0 +1,19 @@
+provider "aws" {
+    region ="us-east-2"
+    access_key = "AKIA2VWDFXP4IQP3MLFA"
+    secret_key = "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"
+}
+resource "aws_instance" "ai" {
+    ami = "ami-09889d8d54f9e0a0e"
+    instance_type = "t2.micro"
+    key_name = "H"
+    tags = {
+        name = "ai"
+    }
+}
+output "public_ip" {
+    value = aws_instance.ai.public_ip
+}
+output "private_ip" {
+    value = aws_instance.ai.private_ip
+}
