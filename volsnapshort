@@ -1,0 +1,50 @@
+provider "aws" {
+  region     = "us-west-2"
+  access_key = "AKIA2VWDFXP4IQP3MLFA"
+  secret_key = "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"
+}
+resource "aws_ebs_volume" "vol" {
+  availability_zone = "us-west-2a"
+  size              = 10
+
+  tags = {
+    Name = "vol"
+  }
+}
+resource "aws_volume_attachment" "ebs_attachment" {
+  device_name = "/dev/sdh"
+  volume_id   = aws_ebs_volume.vol.id
+  instance_id = aws_instance.ec22.id
+}
+resource "aws_instance" "ec22" {
+  ami               = "ami-036d46416a34a611c"
+  availability_zone = "us-west-2a"
+  instance_type     = "t2.micro"
+  key_name = "H"
+ vpc_security_group_ids = ["${aws_security_group.asg.id}"]
+
+  tags = {
+    Name = "ec22"
+  }
+}
+resource "aws_ebs_snapshot" "volsnapshot" {
+  volume_id = aws_ebs_volume.vol.id
+
+  tags = {
+    Name = "volsnapshot"
+  }
+}
+resource "aws_security_group" "asg" {
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+ }
