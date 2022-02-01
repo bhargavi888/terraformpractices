@@ -10,8 +10,8 @@ file.txt
 step2: create main.tf 
 provider "aws"  {
   region     = "us-east-1"
-  access_key = "AKIAY4ZHBPHIYB5FWDNY"
-  secret_key = "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"
+  access_key = ""
+  secret_key = ""
 }
 resource "aws_vpc" "vpc" {
   cidr_block       = "10.0.0.0/16"
