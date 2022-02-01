@@ -1,0 +1,96 @@
+AWSAccessKeyId=AKIAQL6JVCFXOAAOEYVK
+AWSSecretKey=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
+
+main.tf
+
+provider "aws"  {
+  region     = "us-west-2"
+  access_key = "AKIAQL6JVCFXOAAOEYVK"
+  secret_key = "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"
+}
+ data "template_file" "tf" {
+  template = "${file("file.sh")}"
+  vars = {
+    package = "openjdk-8-jdk"
+    package1 = "default-jdk"
+  }
+}
+output "rendered" {
+  value = "${data.template_file.tf.rendered}" 
+}
+resource "null_resource" "nr" {
+     triggers = {
+        package = "openjdk-8-jdk"
+        package1 = "default-jdk"
+    }
+    provisioner "local-exec" {
+    command= "echo ${data.template_file.tf.rendered} >> file_${null_resource.nr.id}.txt"
+}
+}	
+
+file.sh
+
+sudo apt-get update
+sudo apt-get '${package}'
+sudoapt-get '${package1}'
+
+provider "aws"  {
+  region     = "us-west-2"
+  access_key = "AKIAQL6JVCFXOAAOEYVK"
+  secret_key = "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"
+}
+
+resource "aws_s3_bucket" "s3" {
+  bucket = "my-tests1"
+  acl    = "private"
+
+   tags = {
+    Name        = "My-tests1"
+  }
+}
+
+
+resource "aws_s3_bucket" "my-tests1" {
+    bucket = "my-tests1"
+    
+    lifecycle {
+        prevent_destroy = true
+    }
+
+    versioning {
+        enabled = true
+    }
+}
+
+terraform {
+    backend "s3" {
+        bucket = "my-tests1"
+        key = "buck/terraformstatefile"
+        region = "us-west-2"
+        access_key = "AKIAQL6JVCFXOAAOEYVK"
+        secret_key ="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"
+}
+}
+
+terraform {
+    backend "s3" {
+        bucket = "my-tests2"
+        key = "buck/terraformstatefile"
+        region = "us-west-2"
+        access_key = "AKIAQL6JVCFXOAAOEYVK"
+        secret_key ="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"
+}
+}
+
+https://www.coachdevops.com/2021/05/how-to-store-terrafrom-state-file-in-s3.html
+
+nginx can't directly communicate with python based web application thats why we need of gateway interface WSGI  and gunicorn 
+
+Gunicorn is an application server for your running python application instance 
+nginx is reverse proxy. it accepts incomming connections and decides where they should go next. it is in front of Gunicorn.
+Nginx is the front face for your server.
+Gunicorn runs multiple django projects(each project is a wsgi application powered by Gunicorn) in a single server(say Ubuntu).
+In production nginx workes as reverse proxy. It means users will hit nginx from browser and nginx will forward the call to your application
+
+
+

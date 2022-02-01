@@ -1,0 +1,38 @@
+step1: create var.sh
+sudo apt-get install $package
+
+
+
+step2:create main.tf  
+
+provider "aws" {
+    region ="us-west-2"
+    access_key = "AKIAQL6JVCFXOAAOEYVK"
+    secret_key = "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"
+}
+data "template_file" "local" {
+  template = file("${path.module}/var.sh")
+
+  vars = {
+    package   = "docker.io -y"
+  }
+}
+output "rendered" {
+  value = "${data.template_file.local.rendered}"
+}
+resource "local_file" "local-file" {
+  content  = data.template_file.local.rendered
+  filename = "${path.module}/test.sh"
+}
+
+data "template_file" "localfile" {
+  template = file("${path.module}/var.sh")
+
+  vars = {
+    package   = "docker.io -y"
+  }
+}
+resource "local_file" "local-file123" {
+  content  = data.template_file.localfile.rendered
+  filename = "${path.module}/test123.sh"
+}
