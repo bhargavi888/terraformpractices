@@ -1,0 +1,59 @@
+by using terraform transfer the file one mechine to other mechine
+
+https://jhooq.com/terraform-provisioner/
+
+step1: create file in local windows system 
+file.txt
+(path)
+"C:/file12345/file.txt"
+
+step2: create main.tf 
+provider "aws"  {
+  region     = "us-east-1"
+  access_key = "AKIAY4ZHBPHIYB5FWDNY"
+  secret_key = "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"
+}
+resource "aws_vpc" "vpc" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+
+  tags = {
+    Name = "demo-vpc"
+  }
+}
+
+resource "aws_instance" "ec2" {
+  ami                    = "ami-04505e74c0741db8d"
+  instance_type          = "t2.micro"
+  key_name               = "bhagipem"
+  vpc_security_group_ids = ["${aws_security_group.asg.id}"]
+
+  provisioner "file" {
+      source = "C:/file12345/file.txt"
+      destination = "/home/ubuntu/file.txt"
+  }
+
+  connection {
+      type = "ssh"
+      user = "ubuntu"
+      host        = "${aws_instance.ec2.public_ip}"
+    private_key = "${file("./bhagipem.pem")}"
+  }
+  
+}
+resource "aws_security_group" "asg" {
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+ }
+ 
+ terraform init,plan and apply
