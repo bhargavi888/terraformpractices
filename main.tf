@@ -1,3 +1,4 @@
+#EKS script
 provider "aws" {
     access_key = "AKIAV23OP5MYQJG3IFAN"
     secret_key = "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"
